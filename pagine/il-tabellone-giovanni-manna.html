@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Il tabellone di Giovanni Manna</title>
+  <meta name="description" content="Valuta operazione per operazione il calciomercato della prima squadra della S.S.C. Napoli dal maggio 2024 al novembre 2026 e genera il verdetto finale." />
+
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="Il tabellone di Giovanni Manna" />
+  <meta property="og:description" content="Maggio 2024 – Novembre 2026. Valuta ogni singola operazione di mercato da 1 a 10 e copia il verdetto finale." />
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="Il tabellone di Giovanni Manna" />
+  <meta name="twitter:description" content="Maggio 2024 – Novembre 2026. Valuta ogni operazione della prima squadra del Napoli da 1 a 10 e calcola la media finale." />
+
+  <style>
+    :root {
+      --bg-page: #FFFFFF; --bg-surface: #F8FAFC; --border-color: #E2E8F0; --border-strong: #CBD5E1;
+      --text-main: #0F172A; --text-muted: #475569; --napoli-blue: #0077C8; --napoli-blue-dark: #005FA3;
+      --napoli-blue-soft: #E0F2FE; --grade-red: #DC2626; --grade-orange: #EA580C; --grade-amber: #D97706;
+      --grade-green: #16A34A; --grade-emerald: #047857;
+    }
+    *, *::before, *::after { box-sizing: border-box; }
+    html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
+    body { margin: 0; background-color: var(--bg-page); color: var(--text-main); font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; line-height: 1.4; -webkit-font-smoothing: antialiased; }
+    .page-wrap { max-width: 880px; margin: 0 auto; padding: 18px 12px 52px; }
+    .header { padding-bottom: 16px; border-bottom: 1px solid var(--border-color); margin-bottom: 22px; }
+    .header-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
+    h1 { margin: 0; font-size: clamp(21px, 5vw, 27px); font-weight: 800; letter-spacing: -0.02em; color: var(--text-main); line-height: 1.2; }
+    .subtitle { margin: 4px 0 0; font-size: 13.5px; font-weight: 700; color: var(--napoli-blue); }
+    .intro-text { margin: 10px 0 0; font-size: 13.5px; color: var(--text-muted); line-height: 1.45; }
+    .btn-reset { appearance: none; background-color: var(--bg-surface); border: 1px solid var(--border-color); border-radius: 8px; padding: 7px 11px; font-family: inherit; font-size: 12px; font-weight: 600; color: var(--text-muted); cursor: pointer; white-space: nowrap; flex-shrink: 0; touch-action: manipulation; transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease; }
+    .btn-reset:hover { background-color: #F1F5F9; color: var(--text-main); }
+    .btn-reset.armed { background-color: #FEF2F2; border-color: #FECACA; color: var(--grade-red); }
+    .session-block { margin-bottom: 28px; }
+    .session-divider { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 9px 12px; background-color: var(--napoli-blue); color: #FFFFFF; border-radius: 8px; margin-bottom: 10px; }
+    .session-title { margin: 0; font-size: 14.5px; font-weight: 700; color: #FFFFFF; line-height: 1.3; }
+    .session-meta { font-size: 11.5px; font-weight: 600; color: rgba(255, 255, 255, 0.92); white-space: nowrap; flex-shrink: 0; font-variant-numeric: tabular-nums; }
+    .sub-group { border: 1px solid var(--border-color); border-radius: 8px; overflow: hidden; margin-bottom: 12px; background-color: var(--bg-page); }
+    .sub-group:last-child { margin-bottom: 0; }
+    .sub-header { padding: 6px 12px; background-color: var(--bg-surface); border-bottom: 1px solid var(--border-color); font-size: 12px; font-weight: 700; color: var(--napoli-blue); }
+    .op-row { display: flex; flex-direction: column; gap: 8px; padding: 10px 12px; border-bottom: 1px solid var(--border-color); }
+    .op-row:last-child { border-bottom: none; }
+    .op-info { min-width: 0; }
+    .player-name { font-size: 14px; font-weight: 700; color: var(--text-main); line-height: 1.25; word-break: break-word; }
+    .op-details { margin-top: 2px; font-size: 12px; color: var(--text-muted); line-height: 1.35; word-break: break-word; }
+    .vote-bar { display: grid; grid-template-columns: repeat(10, 1fr); width: 100%; height: 38px; border: 1px solid var(--border-strong); border-radius: 7px; overflow: hidden; background-color: var(--bg-page); touch-action: manipulation; }
+    .vote-cell { appearance: none; margin: 0; padding: 0; width: 100%; height: 100%; border: none; border-right: 1px solid var(--border-color); background-color: var(--bg-page); color: var(--text-muted); font-family: inherit; font-size: 12.5px; font-weight: 600; font-variant-numeric: tabular-nums; cursor: pointer; display: flex; align-items: center; justify-content: center; user-select: none; -webkit-tap-highlight-color: transparent; touch-action: manipulation; transition: background-color 0.1s ease, color 0.1s ease; }
+    .vote-cell:last-child { border-right: none; }
+    @media (hover: hover) { .vote-cell:not(.active):hover { background-color: #F1F5F9; color: var(--text-main); } }
+    .vote-cell.active { color: #FFFFFF; font-weight: 700; }
+    .vote-cell.active.tier-red { background-color: var(--grade-red); }
+    .vote-cell.active.tier-orange { background-color: var(--grade-orange); }
+    .vote-cell.active.tier-amber { background-color: var(--grade-amber); }
+    .vote-cell.active.tier-green { background-color: var(--grade-green); }
+    .vote-cell.active.tier-emerald { background-color: var(--grade-emerald); }
+    @media (min-width: 760px) { .op-row { flex-direction: row; align-items: center; justify-content: space-between; gap: 16px; padding: 9px 14px; } .op-info { flex: 1; } .vote-bar { width: 340px; flex-shrink: 0; } }
+    .verdict-box { margin-top: 30px; padding: 18px 16px; background-color: var(--bg-surface); border: 1px solid var(--border-color); border-top: 4px solid var(--napoli-blue); border-radius: 10px; }
+    .verdict-heading { margin: 0 0 10px; font-size: 16px; font-weight: 800; color: var(--text-main); }
+    .verdict-top { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; margin-bottom: 12px; }
+    .verdict-score { font-size: 32px; font-weight: 800; font-variant-numeric: tabular-nums; letter-spacing: -0.02em; color: var(--napoli-blue); line-height: 1.1; }
+    .verdict-badge { display: inline-flex; align-items: center; padding: 4px 10px; border-radius: 999px; font-size: 13px; font-weight: 700; background-color: var(--napoli-blue-soft); color: var(--napoli-blue-dark); }
+    .verdict-badge.muted { background-color: #E2E8F0; color: var(--text-muted); font-weight: 600; }
+    .verdict-badge.bad { background-color: #FEE2E2; color: #B91C1C; }
+    .verdict-badge.warn { background-color: #FFEDD5; color: #C2410C; }
+    .verdict-badge.ok { background-color: #FEF3C7; color: #B45309; }
+    .verdict-badge.good { background-color: #DCFCE7; color: #15803D; }
+    .verdict-badge.great { background-color: #D1FAE5; color: #065F46; }
+    .verdict-count { font-size: 13px; font-weight: 600; font-variant-numeric: tabular-nums; color: var(--text-muted); margin-bottom: 10px; }
+    .pills-row { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; }
+    .stat-pill { display: inline-flex; align-items: center; padding: 5px 10px; border-radius: 999px; background-color: var(--bg-page); border: 1px solid var(--border-color); font-size: 12.5px; font-weight: 600; font-variant-numeric: tabular-nums; color: var(--text-main); }
+    .stat-pill.pos { border-color: #BBF7D0; color: #15803D; }
+    .stat-pill.suf { border-color: #FDE68A; color: #B45309; }
+    .stat-pill.ins { border-color: #FECACA; color: #B91C1C; }
+    .btn-copy-x { appearance: none; background-color: var(--napoli-blue); border: 1px solid var(--napoli-blue); color: #FFFFFF; font-family: inherit; font-size: 13.5px; font-weight: 700; padding: 10px 18px; border-radius: 8px; cursor: pointer; touch-action: manipulation; transition: background-color 0.15s ease, opacity 0.15s ease; }
+    .btn-copy-x:hover:not(:disabled) { background-color: var(--napoli-blue-dark); }
+    .btn-copy-x:disabled { opacity: 0.45; cursor: not-allowed; }
+    .btn-copy-x.copied { background-color: var(--grade-emerald); border-color: var(--grade-emerald); }
+    .home-link { display: inline-block; margin-bottom: 14px; color: var(--napoli-blue-dark); font-size: 13px; font-weight: 600; text-decoration: none; }
+    .home-link:hover { text-decoration: underline; }
+  </style>
+</head>
+<body>
+  <main class="page-wrap">
+    <a class="home-link" href="../">← Tutte le pagine</a>
+    <header class="header">
+      <div class="header-top">
+        <div>
+          <h1>Il tabellone di Giovanni Manna</h1>
+          <div class="subtitle">Maggio 2024 – Novembre 2026</div>
+        </div>
+        <button type="button" id="resetBtn" class="btn-reset" onclick="handleReset()">Azzera voti</button>
+      </div>
+      <p class="intro-text">Esprimi qualsiasi opinione nei commenti su X, ma valuta prima ogni singola operazione di mercato qui sotto.</p>
+    </header>
+    <div id="sessionsContainer"></div>
+    <section class="verdict-box" id="verdictBox" aria-live="polite"></section>
+  </main>
+  <script>
+    // Archivio delle 69 operazioni della prima squadra (2024–2026).
+    const STORAGE_KEY = "manna_voti_unici_v1";
+    const GRADES = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+    const MARKET_SESSIONS = [
+      {
+        id: "s1", title: "Sessione estiva 2024/25 (luglio – agosto 2024)", entrateLabel: "Entrate",
+        entrate: [
+          { id: "op_1", player: "Alessandro Buongiorno", details: "Difensore centrale · dal Torino · Titolo definitivo · 35,00 M€ (+3 M€ bonus)" },
+          { id: "op_2", player: "Romelu Lukaku", details: "Punta centrale · dal Chelsea · Titolo definitivo · 30,00 M€ (+bonus)" },
+          { id: "op_3", player: "Scott McTominay", details: "Centrocampista · dal Manchester United · Titolo definitivo · 30,50 M€" },
+          { id: "op_4", player: "David Neres", details: "Ala destra · dal Benfica · Titolo definitivo · 28,00 M€ (+bonus)" },
+          { id: "op_5", player: "Billy Gilmour", details: "Mediano · dal Brighton · Titolo definitivo · 14,00 M€ (+0,75 M€ bonus)" },
+          { id: "op_6", player: "Rafa Marín", details: "Difensore centrale · dal Real Madrid · Titolo definitivo (con recompra) · 10,00 M€ (+2 M€ bonus)" },
+          { id: "op_7", player: "Leonardo Spinazzola", details: "Terzino sinistro · dalla Roma · Parametro zero · 0,00 M€" }
+        ],
+        uscite: [
+          { id: "op_8", player: "Natan", details: "Difensore centrale · al Real Betis · Prestito (1 M€) + riscatto esercitato (9 M€) · 10,00 M€ tot." },
+          { id: "op_9", player: "Leo Østigård", details: "Difensore centrale · allo Stade Rennais · Titolo definitivo · 7,37 M€" },
+          { id: "op_10", player: "Gianluca Gaetano", details: "Centrocampista · al Cagliari · Prestito + obbligo esercitato · 6,20 M€" },
+          { id: "op_11", player: "Jesper Lindstrøm", details: "Ala destra · all'Everton · Prestito oneroso · 2,44 M€" },
+          { id: "op_12", player: "Jens Cajuste", details: "Mediano · all'Ipswich Town · Prestito oneroso · 1,50 M€" },
+          { id: "op_13", player: "Walid Cheddira", details: "Punta centrale · all'Espanyol · Prestito oneroso · 0,50 M€" },
+          { id: "op_14", player: "Alessandro Zanoli", details: "Terzino destro · al Genoa · Prestito oneroso · 0,50 M€" },
+          { id: "op_15", player: "Victor Osimhen", details: "Punta centrale · al Galatasaray · Prestito gratuito (ingaggio coperto) · 0,00 M€" },
+          { id: "op_16", player: "Piotr Zieliński", details: "Centrocampista · all'Inter · Svincolo a parametro zero · 0,00 M€" },
+          { id: "op_17", player: "Diego Demme", details: "Mediano · all'Hertha Berlino · Svincolo a parametro zero · 0,00 M€" },
+          { id: "op_18", player: "Mário Rui", details: "Terzino sinistro · Svincolato · Risoluzione consensuale (dic. 2024) · 0,00 M€" }
+        ]
+      },
+      {
+        id: "s2", title: "Sessione invernale 2024/25 (gennaio – febbraio 2025)", entrateLabel: "Entrate",
+        entrate: [
+          { id: "op_19", player: "Noah Okafor", details: "Ala sinistra · dal Milan · Prestito oneroso · 1,90 M€" },
+          { id: "op_20", player: "Luis Hasa", details: "Centrocampista · dal Lecce · Titolo definitivo · 0,50 M€" },
+          { id: "op_21", player: "Philip Billing", details: "Centrocampista · dal Bournemouth · Prestito gratuito con diritto · 0,00 M€" },
+          { id: "op_22", player: "Simone Scuffet", details: "Portiere · dal Cagliari · Prestito secco gratuito · 0,00 M€" }
+        ],
+        uscite: [
+          { id: "op_23", player: "Khvicha Kvaratskhelia", details: "Ala sinistra · al Paris Saint-Germain · Titolo definitivo · 70,00 M€ (+10 M€ bonus)" },
+          { id: "op_24", player: "Elia Caprile", details: "Portiere · al Cagliari · Prestito + riscatto esercitato · 8,20 M€" },
+          { id: "op_25", player: "Michael Folorunsho", details: "Centrocampista · alla Fiorentina · Prestito oneroso · 1,00 M€" },
+          { id: "op_26", player: "Alessio Zerbin", details: "Ala sinistra · al Venezia · Prestito oneroso · 0,30 M€" }
+        ]
+      },
+      {
+        id: "s3", title: "Sessione estiva 2025/26 (luglio – settembre 2025)", entrateLabel: "Entrate",
+        entrate: [
+          { id: "op_27", player: "Rasmus Højlund", details: "Punta centrale · dal Manchester United · Prestito (6 M€) + obbligo riscattato (44 M€) · 50,00 M€ tot." },
+          { id: "op_28", player: "Lorenzo Lucca", details: "Punta centrale · dall'Udinese · Prestito (9 M€) + obbligo (26 M€) · 35,00 M€ (+bonus)" },
+          { id: "op_29", player: "Sam Beukema", details: "Difensore centrale · dal Bologna · Titolo definitivo · 31,00 M€ (+3 M€ bonus)" },
+          { id: "op_30", player: "Noa Lang", details: "Ala sinistra · dal PSV Eindhoven · Titolo definitivo · 25,00 M€ (+3 M€ bonus)" },
+          { id: "op_31", player: "Vanja Milinković-Savić", details: "Portiere · dal Torino · Prestito (15 M€) + obbligo (6 M€) · 21,00 M€ tot." },
+          { id: "op_32", player: "Miguel Gutiérrez", details: "Terzino sinistro · dal Girona · Titolo definitivo · 18,00 M€ (+bonus)" },
+          { id: "op_33", player: "Luca Marianucci", details: "Difensore centrale · dall'Empoli · Titolo definitivo · 9,00 M€" },
+          { id: "op_34", player: "Eljif Elmas", details: "Trequartista · dal RB Lipsia · Prestito oneroso con diritto · 2,00 M€ (+0,5 M€ bonus)" },
+          { id: "op_35", player: "Kevin De Bruyne", details: "Trequartista · dal Manchester City · Parametro zero · 0,00 M€" }
+        ],
+        uscite: [
+          { id: "op_36", player: "Victor Osimhen", details: "Punta centrale · al Galatasaray · Titolo definitivo · 75,00 M€" },
+          { id: "op_37", player: "Giacomo Raspadori", details: "Seconda punta · all'Atlético Madrid · Titolo definitivo · 22,00 M€ (+4 M€ bonus)" },
+          { id: "op_38", player: "Giovanni Simeone", details: "Punta centrale · al Torino · Prestito (1,35 M€) + obbligo riscattato (7,20 M€) · 8,55 M€ tot." },
+          { id: "op_39", player: "Alessandro Zanoli", details: "Terzino destro · all'Udinese · Prestito + obbligo riscattato · 5,00 M€" },
+          { id: "op_40", player: "Jesper Lindstrøm", details: "Ala destra · al Wolfsburg · Prestito oneroso · 1,50 M€" },
+          { id: "op_41", player: "Jens Cajuste", details: "Mediano · all'Ipswich Town · Rinnovo prestito oneroso · 1,20 M€" },
+          { id: "op_42", player: "Rafa Marín", details: "Difensore centrale · al Villarreal · Prestito oneroso · 1,00 M€" },
+          { id: "op_43", player: "Cyril Ngonge", details: "Ala destra · al Torino · Prestito oneroso · 0,50 M€" },
+          { id: "op_44", player: "Michael Folorunsho", details: "Centrocampista · al Cagliari · Prestito oneroso · 0,50 M€" },
+          { id: "op_45", player: "Nosa Edward Obaretin", details: "Difensore centrale · all'Empoli · Prestito oneroso · 0,30 M€" },
+          { id: "op_46", player: "Alessio Zerbin", details: "Ala sinistra · alla Cremonese · Prestito oneroso · 0,25 M€" },
+          { id: "op_47", player: "Walid Cheddira", details: "Punta centrale · al Sassuolo · Prestito oneroso · 0,20 M€" }
+        ]
+      },
+      {
+        id: "s4", title: "Sessione invernale 2025/26 (gennaio – febbraio 2026)", entrateLabel: "Entrate",
+        entrate: [
+          { id: "op_48", player: "Giovane", details: "Punta centrale · dall'Hellas Verona · Titolo definitivo · 2,00 M€ (+bonus fino a 20 M€)" },
+          { id: "op_49", player: "Alisson Santos", details: "Ala sinistra · dallo Sporting CP · Prestito (3,50 M€) + riscatto esercitato (16,50 M€) · 20,00 M€ tot." }
+        ],
+        uscite: [
+          { id: "op_50", player: "Lorenzo Lucca", details: "Punta centrale · al Nottingham Forest · Prestito oneroso · 2,00 M€" },
+          { id: "op_51", player: "Noa Lang", details: "Ala sinistra · al Galatasaray · Prestito oneroso · 2,00 M€" },
+          { id: "op_52", player: "Cyril Ngonge", details: "Ala destra · all'Espanyol · Prestito oneroso · 1,00 M€" },
+          { id: "op_53", player: "Giuseppe Ambrosino", details: "Punta centrale · al Modena · Prestito oneroso · 0,50 M€" },
+          { id: "op_54", player: "Luca Marianucci", details: "Difensore centrale · al Torino · Prestito oneroso · 0,25 M€" },
+          { id: "op_55", player: "Walid Cheddira", details: "Punta centrale · al Lecce · Prestito secco gratuito · 0,00 M€" }
+        ]
+      },
+      {
+        id: "s5", title: "Sessione estiva 2026/27 (fino al 17 novembre 2026)", entrateLabel: "Entrate",
+        entrate: [
+          { id: "op_56", player: "Benoît Badiashile", details: "Difensore centrale · dal Chelsea · Prestito oneroso con diritto (20 M€) · 3,00 M€" },
+          { id: "op_57", player: "Costantino Favasuli", details: "Terzino destro · dal Catanzaro · Prestito (1 M€) + obbligo (6,20 M€) · 7,20 M€ tot." }
+        ],
+        uscite: [
+          { id: "op_58", player: "Miguel Gutiérrez", details: "Terzino sinistro · al Bayer Leverkusen · Titolo definitivo · 26,00 M€" },
+          { id: "op_59", player: "Romelu Lukaku", details: "Punta centrale · al Fenerbahçe · Titolo definitivo · 6,00 M€ (+3 M€ bonus)" },
+          { id: "op_60", player: "Luis Hasa", details: "Centrocampista · al Frosinone · Titolo definitivo · 2,50 M€" },
+          { id: "op_61", player: "Walid Cheddira", details: "Punta centrale · all'Avellino · Titolo definitivo · 2,50 M€" },
+          { id: "op_62", player: "Alessio Zerbin", details: "Ala sinistra · al Frosinone · Titolo definitivo · 2,00 M€" },
+          { id: "op_63", player: "Cyril Ngonge", details: "Ala destra · al Monza · Prestito oneroso · 1,00 M€" },
+          { id: "op_64", player: "Pasquale Mazzocchi", details: "Terzino destro · al Venezia · Prestito oneroso · 0,50 M€" },
+          { id: "op_65", player: "Michael Folorunsho", details: "Centrocampista · al Monza · Prestito oneroso · 0,50 M€" },
+          { id: "op_66", player: "Nosa Edward Obaretin", details: "Difensore centrale · al Lorient · Prestito oneroso · 0,35 M€" },
+          { id: "op_67", player: "Juan Jesus", details: "Difensore centrale · al Venezia · Svincolo a scadenza contrattuale · 0,00 M€" },
+          { id: "op_68", player: "Jens Cajuste", details: "Mediano · al Málaga · Prestito gratuito · 0,00 M€" },
+          { id: "op_69", player: "Jesper Lindstrøm", details: "Ala destra · al Salisburgo · Prestito gratuito · 0,00 M€" }
+        ]
+      }
+    ];
+    const ALL_OPERATIONS = MARKET_SESSIONS.reduce(function(acc, session) { return acc.concat(session.entrate, session.uscite); }, []);
+    var votes = {};
+    var resetArmed = false;
+    var resetTimer = null;
+
+    function escapeHtml(str) {
+      return String(str).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#39;");
+    }
+    function loadSavedVotes() {
+      try {
+        var raw = window.localStorage.getItem(STORAGE_KEY);
+        if (!raw) return;
+        var parsed = JSON.parse(raw);
+        if (parsed && typeof parsed === "object") {
+          ALL_OPERATIONS.forEach(function(op) { var val = Number(parsed[op.id]); if (GRADES.indexOf(val) !== -1) votes[op.id] = val; });
+        }
+      } catch (e) { votes = {}; }
+    }
+    function persistVotes() { try { window.localStorage.setItem(STORAGE_KEY, JSON.stringify(votes)); } catch (e) {} }
+    function getGradeTierClass(grade) {
+      if (grade <= 4) return "tier-red";
+      if (grade === 5) return "tier-orange";
+      if (grade === 6) return "tier-amber";
+      if (grade <= 8) return "tier-green";
+      return "tier-emerald";
+    }
+    function buildOperationRowHtml(item) {
+      var activeGrade = votes[item.id] || 0;
+      var safePlayer = escapeHtml(item.player);
+      var safeDetails = escapeHtml(item.details);
+      var cellsHtml = GRADES.map(function(grade) {
+        var isActive = activeGrade === grade;
+        var tierClass = getGradeTierClass(grade);
+        return '<button type="button" class="vote-cell ' + tierClass + (isActive ? ' active' : '') + '" data-grade="' + grade + '" aria-pressed="' + (isActive ? 'true' : 'false') + '" aria-label="Voto ' + grade + ' su 10 per ' + safePlayer + '" onclick="toggleVote(\'' + item.id + '\', ' + grade + ')">' + grade + '</button>';
+      }).join("");
+      return '<div class="op-row" id="row_' + item.id + '"><div class="op-info"><div class="player-name">' + safePlayer + '</div><div class="op-details">' + safeDetails + '</div></div><div class="vote-bar" role="group" aria-label="Voto in decimi per ' + safePlayer + '">' + cellsHtml + '</div></div>';
+    }
+    function renderAllSessions() {
+      var container = document.getElementById("sessionsContainer");
+      if (!container) return;
+      container.innerHTML = MARKET_SESSIONS.map(function(session) {
+        var sessionTotal = session.entrate.length + session.uscite.length;
+        return '<section class="session-block" aria-labelledby="sec_' + session.id + '"><div class="session-divider"><h2 class="session-title" id="sec_' + session.id + '">' + escapeHtml(session.title) + '</h2><span class="session-meta">' + sessionTotal + ' operazioni</span></div><div class="sub-group"><div class="sub-header">' + escapeHtml(session.entrateLabel) + ' (' + session.entrate.length + ')</div>' + session.entrate.map(buildOperationRowHtml).join("") + '</div><div class="sub-group"><div class="sub-header">Uscite (' + session.uscite.length + ')</div>' + session.uscite.map(buildOperationRowHtml).join("") + '</div></section>';
+      }).join("");
+    }
+    function toggleVote(opId, grade) {
+      if (votes[opId] === grade) delete votes[opId]; else votes[opId] = grade;
+      persistVotes();
+      var row = document.getElementById("row_" + opId);
+      if (row) {
+        var current = votes[opId] || 0;
+        var buttons = row.querySelectorAll(".vote-cell");
+        for (var i = 0; i < buttons.length; i++) {
+          var btn = buttons[i];
+          var active = Number(btn.getAttribute("data-grade")) === current;
+          btn.classList.toggle("active", active);
+          btn.setAttribute("aria-pressed", active ? "true" : "false");
+        }
+      }
+      renderVerdictBox();
+    }
+    function handleReset() {
+      var btn = document.getElementById("resetBtn");
+      if (!btn) return;
+      if (!resetArmed) {
+        resetArmed = true;
+        btn.textContent = "Conferma azzeramento?";
+        btn.classList.add("armed");
+        clearTimeout(resetTimer);
+        resetTimer = setTimeout(function() { resetArmed = false; btn.textContent = "Azzera voti"; btn.classList.remove("armed"); }, 3000);
+      } else {
+        clearTimeout(resetTimer);
+        resetArmed = false;
+        votes = {};
+        persistVotes();
+        btn.textContent = "Azzera voti";
+        btn.classList.remove("armed");
+        renderAllSessions();
+        renderVerdictBox();
+      }
+    }
+    function getJudgmentInfo(average) {
+      if (average < 5.0) return { label: "Gravemente insufficiente", badgeClass: "bad" };
+      if (average < 6.0) return { label: "Insufficiente", badgeClass: "warn" };
+      if (average < 6.5) return { label: "Sufficiente", badgeClass: "ok" };
+      if (average < 7.5) return { label: "Discreto", badgeClass: "good" };
+      if (average < 8.5) return { label: "Buono", badgeClass: "good" };
+      return { label: "Ottimo", badgeClass: "great" };
+    }
+    function calculateVerdictData() {
+      var evaluatedCount = 0, sum = 0, positiveCount = 0, sufficientCount = 0, insufficientCount = 0;
+      ALL_OPERATIONS.forEach(function(op) {
+        var grade = votes[op.id];
+        if (!grade) return;
+        evaluatedCount++;
+        sum += grade;
+        if (grade >= 7) positiveCount++; else if (grade === 6) sufficientCount++; else insufficientCount++;
+      });
+      var totalCount = ALL_OPERATIONS.length;
+      var average = evaluatedCount > 0 ? sum / evaluatedCount : 0;
+      var formattedAverage = evaluatedCount > 0 ? average.toFixed(2).replace(".", ",") : "--";
+      var info = evaluatedCount > 0 ? getJudgmentInfo(average) : { label: "In attesa di valutazioni", badgeClass: "muted" };
+      return { evaluatedCount: evaluatedCount, totalCount: totalCount, formattedAverage: formattedAverage, judgment: info.label, badgeClass: info.badgeClass, positiveCount: positiveCount, sufficientCount: sufficientCount, insufficientCount: insufficientCount };
+    }
+    function renderVerdictBox() {
+      var box = document.getElementById("verdictBox");
+      if (!box) return;
+      var data = calculateVerdictData();
+      var hasVotes = data.evaluatedCount > 0;
+      box.innerHTML = '<h2 class="verdict-heading">Verdetto finale</h2><div class="verdict-top"><span class="verdict-score">' + data.formattedAverage + ' / 10</span><span class="verdict-badge ' + data.badgeClass + '">' + escapeHtml(data.judgment) + '</span></div><div class="verdict-count">' + data.evaluatedCount + ' / ' + data.totalCount + ' operazioni valutate</div><div class="pills-row"><span class="stat-pill pos">Positive (7–10): ' + data.positiveCount + '</span><span class="stat-pill suf">Sufficienti (6): ' + data.sufficientCount + '</span><span class="stat-pill ins">Insufficienti (1–5): ' + data.insufficientCount + '</span></div><button type="button" id="copyBtn" class="btn-copy-x" onclick="copyVerdictText()"' + (hasVotes ? '' : ' disabled') + '>Copia verdetto per X</button>';
+    }
+    function buildSyntheticShareText() {
+      var data = calculateVerdictData();
+      return "Il mio verdetto sull'operato di Giovanni Manna al Napoli (maggio 2024 – novembre 2026):\n" + "Voto medio: " + data.formattedAverage + "/10 (" + data.judgment + ")\n" + "Operazioni valutate: " + data.evaluatedCount + "/" + data.totalCount + " (" + data.positiveCount + " positive, " + data.sufficientCount + " sufficienti, " + data.insufficientCount + " insufficienti)";
+    }
+    function showCopiedButtonState() {
+      var btn = document.getElementById("copyBtn");
+      if (!btn) return;
+      btn.textContent = "Verdetto copiato!";
+      btn.classList.add("copied");
+      setTimeout(function() { var currentBtn = document.getElementById("copyBtn"); if (currentBtn) { currentBtn.textContent = "Copia verdetto per X"; currentBtn.classList.remove("copied"); } }, 2000);
+    }
+    function fallbackCopyText(text) {
+      var textarea = document.createElement("textarea");
+      textarea.value = text;
+      textarea.setAttribute("readonly", "");
+      textarea.style.position = "fixed";
+      textarea.style.top = "0";
+      textarea.style.left = "-9999px";
+      document.body.appendChild(textarea);
+      textarea.focus();
+      textarea.select();
+      textarea.setSelectionRange(0, 99999);
+      try { document.execCommand("copy"); } catch (e) {}
+      document.body.removeChild(textarea);
+      showCopiedButtonState();
+    }
+    function copyVerdictText() {
+      var text = buildSyntheticShareText();
+      if (navigator.clipboard && typeof navigator.clipboard.writeText === "function") {
+        navigator.clipboard.writeText(text).then(function() { showCopiedButtonState(); }).catch(function() { fallbackCopyText(text); });
+      } else { fallbackCopyText(text); }
+    }
+    function initApp() { loadSavedVotes(); renderAllSessions(); renderVerdictBox(); }
+    if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", initApp); else initApp();
+  </script>
+</body>
+</html>
